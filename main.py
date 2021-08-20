@@ -1,31 +1,54 @@
+from json.decoder import JSONDecodeError
 import requests
+import json
+import time
 
-method = ["GET", "POST", "DELETE", "PUT"]
+response = requests.get("https://playground.learnqa.ru/ajax/api/longtime_job")
 
-print("Сценарий 1: без метода")
-response1 = requests.get("https://playground.learnqa.ru/api/compare_query_type")
-print(response1.text)
-# Ответ Wrong method provided
+try:
+    answer = json.loads(response.text)
+except JSONDecodeError:
+    print("Response is not a Json format")
 
-print("Сценарий 2: Head - не из списка")
-response2 = requests.head("https://playground.learnqa.ru/api/compare_query_type", params={"method": method[0]})
-print(response2.text)
-# Ответ пустой
+if "token" in answer and "seconds" in answer:
+    token = answer["token"]
+    second = answer["seconds"]
+else:
+    print("Ключей 'token' или 'seconds' в JSON не оказалось")
 
-print("Сценарий 3: корректный запрос относительно метода")
-response3 = requests.get("https://playground.learnqa.ru/api/compare_query_type", params={"method": method[0]})
-print(response3.text)
-# Ответ {"success":"!"}
 
-print("Сценарий 4: перебор")
-for x in method:
-    for y in method:
-        payload = {"method": x}
-        if y == "GET":
-            response4 = getattr(requests, y.lower())("https://playground.learnqa.ru/api/compare_query_type", params=payload)
-            print(f"Get {y} with params {x} and answer: {response4.text}")
-        else:
-            response4 = getattr(requests, y.lower())("https://playground.learnqa.ru/api/compare_query_type", data=payload)
-            print(f"Get {y} with params {x} and answer: {response4.text}")
+print(f"token: {token} seconds: {second}")
 
-# Delete send with params GET and answer: {"success":"!"}
+# Обращаемся пока задача ещё не готова
+payload = {"token": token}
+response_with_token = requests.get("https://playground.learnqa.ru/ajax/api/longtime_job", params=payload)
+try:
+    answer = json.loads(response_with_token.text)
+except JSONDecodeError:
+    print("Response is not a Json format")
+
+if "status" in answer:
+    status = answer["status"]
+else:
+    print("Ключа 'status' в JSON не оказалось")
+
+print(f"Текущий статус: {status}")
+
+# Засыпаем на время выполнения задачи
+time.sleep(second)
+
+# Запрос по готовности задачи
+response_with_token = requests.get("https://playground.learnqa.ru/ajax/api/longtime_job", params=payload)
+
+try:
+    answer = json.loads(response_with_token.text)
+except JSONDecodeError:
+    print("Response is not a Json format")
+
+if "result" in answer:
+    result = answer["result"]
+else:
+    print("Ключа 'result' в JSON не оказалось")
+
+print(f"Результат: {result}")
+
