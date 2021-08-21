@@ -1,14 +1,36 @@
 import requests
+method = ["GET", "POST", "DELETE", "PUT"]
 
-top_password = {"123456", "123456789", "qwerty", "password", "1234567", "12345678", "12345", "iloveyou", "111111", "123123", "abc123", "qwerty123", "1q2w3e4r", "admin", "qwertyuiop", "654321", "555555", "lovely", "7777777", "welcome", "888888", "princess", "dragon", "password1", "123qwe"}
+print("Сценарий 1: без метода")
+response1 = requests.get("https://playground.learnqa.ru/api/compare_query_type")
+print(response1.text)
+# Ответ Wrong method provided
 
-for x in top_password:
-    payload = {"login": "super_admin", "password": x}
-    response = requests.post("https://playground.learnqa.ru/api/get_secret_password_homework", data=payload)
-    answer = dict(response.cookies)
+print("Сценарий 2: Head - не из списка")
+response2 = requests.head("https://playground.learnqa.ru/api/compare_query_type", params={"method": method[0]})
+print(response2.text)
+# Ответ пустой
 
-    response_check = requests.get("https://playground.learnqa.ru/api/check_auth_cookie", cookies=answer)
-    if response_check.text == "You are authorized":
-        print(f"Пароль: {x} c ответом {response_check.text}")
+print("Сценарий 3: корректный запрос относительно метода")
+response3 = requests.get("https://playground.learnqa.ru/api/compare_query_type", params={"method": method[0]})
+print(response3.text)
+# Ответ {"success":"!"}
+
+print("Сценарий 4: перебор")
+for x in method:
+    for y in method:
+        payload = {"method": x}
+        if y == "GET":
+            response4 = getattr(requests, y.lower())("https://playground.learnqa.ru/api/compare_query_type", params=payload)
+        else:
+            response4 = getattr(requests, y.lower())("https://playground.learnqa.ru/api/compare_query_type", data=payload)
+
+        if x == y and "success" not in response4.text:
+            print(f"Get {y} with params {x} and answer: {response4.text}")
+        if x != y and "success" in response4.text:
+            print(f"Get {y} with params {x} and answer: {response4.text}")
+
+
+# Delete send with params GET and answer: {"success":"!"}
 
 
