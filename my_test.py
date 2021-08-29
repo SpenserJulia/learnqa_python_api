@@ -3,4 +3,4 @@ class TestShortPhrase:
         phrase = input("Set a phrase:")
         print(f"{phrase}")
 
-        assert len(phrgiase) <= 15, "Phrase longer then 15 simbols"
+        assert len(phrase) <= 15, "Phrase longer then 15 simbols"
