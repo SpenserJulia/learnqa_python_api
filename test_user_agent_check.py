@@ -54,6 +54,7 @@ class TestUserAgentCheck:
         assert browser_from_response == browser, f"Browser from response '{browser_from_response}' is not equal '{browser}' where UA = '{ua}'"
         assert device_from_response == device, f"Platform from response '{device_from_response}' is not equal '{device}' where UA = '{ua}'"
 
+
         # AssertionError: Browser from response 'No' is not equal 'Chrome' where UA = 'Mozilla/5.0 (iPad; CPU OS 13_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/91.0.4472.77 Mobile/15E148 Safari/604.1'
         # AssertionError: Platform from response 'Unknown' 'is not equal 'Googlebot' where UA = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
         # AssertionError: Platform from response 'Unknown' is not equal 'iPhone' where UA = 'Mozilla/5.0 (iPad; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1'
