@@ -20,9 +20,9 @@ class TestUserGet(BaseCase):
     def test_get_user_details_not_auth(self):
         response = requests.get("https://playground.learnqa.ru/api/user/2")
         Assertions.assert_json_has_key(response, "username")
-        Assertions.assert_json_has_not_key(response, "email")
-        Assertions.assert_json_has_not_key(response, "firstName")
-        Assertions.assert_json_has_not_key(response, "lastName")
+        expected_fields = ["email", "firstName", "lastName"]
+        Assertions.assert_json_has_not_keys(response, expected_fields)
+
 
     def test_get_user_details_auth_as_same_user(self):
         response = requests.get(
@@ -44,5 +44,3 @@ class TestUserGet(BaseCase):
 
         Assertions.assert_json_has_key(response, "username")
 
-        expected_fields = ["email", "firstName", "lastName"]
-        Assertions.assert_json_has_not_keys(response,expected_fields)
