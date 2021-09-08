@@ -1,4 +1,4 @@
-import requests
+from lib.my_requests import MyRequests
 import pytest
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
@@ -6,7 +6,7 @@ from datetime import datetime
 
 
 class TestUserRegister(BaseCase):
-    url_register = "https://playground.learnqa.ru/api/user/"
+    url_register = "/user/"
     exclude_params = [
         ('password'),
         ('username'),
@@ -31,7 +31,7 @@ class TestUserRegister(BaseCase):
     def test_create_user_successfully(self):
         self.data['email'] = self.email
 
-        response = requests.post(self.url_register, data=self.data)
+        response = MyRequests.post(self.url_register, data=self.data)
         Assertions.assert_code_status(response, 200)
         Assertions.assert_json_has_key(response, "id")
 
@@ -39,7 +39,7 @@ class TestUserRegister(BaseCase):
         email = 'vinkotov@example.com'
         self.data['email'] = email
 
-        response = requests.post(self.url_register, data=self.data)
+        response = MyRequests.post(self.url_register, data=self.data)
         Assertions.assert_code_status(response, 400)
         Assertions.assert_answer_text(response, f"Users with email '{email}' already exists")
 
@@ -47,7 +47,7 @@ class TestUserRegister(BaseCase):
         email = f"{self.base_part}{self.random_part}{self.domain}"
         self.data['email'] = email
 
-        response = requests.post(self.url_register, data=self.data)
+        response = MyRequests.post(self.url_register, data=self.data)
         Assertions.assert_code_status(response, 400)
         Assertions.assert_answer_text(response, "Invalid email format")
 
@@ -57,20 +57,20 @@ class TestUserRegister(BaseCase):
 
         del self.data[condition]
 
-        response = requests.post(self.url_register, data=self.data)
+        response = MyRequests.post(self.url_register, data=self.data)
         Assertions.assert_code_status(response, 400)
         Assertions.assert_answer_text(response, f"The following required params are missed: {condition}")
 
     def test_with_short_email(self):
         self.data['email'] = 'q'
 
-        response = requests.post(self.url_register, data=self.data)
+        response = MyRequests.post(self.url_register, data=self.data)
         Assertions.assert_code_status(response, 400)
         Assertions.assert_answer_text(response, "The value of 'email' field is too short")
 
     def test_with_long_email(self):
         self.data['email'] = 'testtestlooooooooooooooooooooooooooooooooooooooooooooooongloooooooooooooooooooooooooooooooooooooooooooooooooooooooooooongloooooooooooooooooooooooooooooooooooooooooooooongloooooooooooooooooooooooooooooooooooooooooooongloooooooooooooooooooong@email.com'
 
-        response = requests.post(self.url_register, data=self.data)
+        response = MyRequests.post(self.url_register, data=self.data)
         Assertions.assert_code_status(response, 400)
         Assertions.assert_answer_text(response, "Invalid email format")
