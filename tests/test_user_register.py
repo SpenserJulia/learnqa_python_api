@@ -3,8 +3,10 @@ import pytest
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 from datetime import datetime
+import allure
 
 
+@allure.epic("User register cases")
 class TestUserRegister(BaseCase):
     url_register = "/user/"
     exclude_params = [
@@ -28,6 +30,7 @@ class TestUserRegister(BaseCase):
             'lastName': 'learnqa',
         }
 
+    @allure.description("Successfully create new user")
     def test_create_user_successfully(self):
         self.data['email'] = self.email
 
@@ -35,6 +38,7 @@ class TestUserRegister(BaseCase):
         Assertions.assert_code_status(response, 200)
         Assertions.assert_json_has_key(response, "id")
 
+    @allure.description("Create user with exiting email ")
     def test_create_user_with_existing_email(self):
         email = 'vinkotov@example.com'
         self.data['email'] = email
@@ -43,6 +47,7 @@ class TestUserRegister(BaseCase):
         Assertions.assert_code_status(response, 400)
         Assertions.assert_answer_text(response, f"Users with email '{email}' already exists")
 
+    @allure.description("Create user with email without @")
     def test_incorrect_email_without_at(self):
         email = f"{self.base_part}{self.random_part}{self.domain}"
         self.data['email'] = email
@@ -51,6 +56,7 @@ class TestUserRegister(BaseCase):
         Assertions.assert_code_status(response, 400)
         Assertions.assert_answer_text(response, "Invalid email format")
 
+    @allure.description("Create user without params for registration ")
     @pytest.mark.parametrize('condition', exclude_params)
     def test_without_some_params(self, condition):
         self.data['email'] = self.email
@@ -61,6 +67,7 @@ class TestUserRegister(BaseCase):
         Assertions.assert_code_status(response, 400)
         Assertions.assert_answer_text(response, f"The following required params are missed: {condition}")
 
+    @allure.description("Create user with short emil ")
     def test_with_short_email(self):
         self.data['email'] = 'q'
 
@@ -68,6 +75,7 @@ class TestUserRegister(BaseCase):
         Assertions.assert_code_status(response, 400)
         Assertions.assert_answer_text(response, "The value of 'email' field is too short")
 
+    @allure.description("Create user with long email ")
     def test_with_long_email(self):
         self.data['email'] = 'testtestlooooooooooooooooooooooooooooooooooooooooooooooongloooooooooooooooooooooooooooooooooooooooooooooooooooooooooooongloooooooooooooooooooooooooooooooooooooooooooooongloooooooooooooooooooooooooooooooooooooooooooongloooooooooooooooooooong@email.com'
 

@@ -1,8 +1,10 @@
 from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
+import allure
 
 
+@allure.epic("User edit cases")
 class TestUserEdit(BaseCase):
 
     def setup(self):
@@ -30,6 +32,7 @@ class TestUserEdit(BaseCase):
         self.auth_sid = self.get_cookie(response_log, "auth_sid")
         self.token = self.get_header(response_log, "x-csrf-token")
 
+    @allure.description("Successfully edit name just created user")
     def test_edit_just_created_user(self):
         # EDIT
         new_name = "Change Name"
@@ -50,6 +53,7 @@ class TestUserEdit(BaseCase):
 
         Assertions.assert_json_value_by_name(response_get, "firstName", new_name, "Wrong name of user after edit")
 
+    @allure.description("Edit user firstname on short with 1 symbol")
     def test_edit_firstname_on_short(self):
         # EDIT
         new_name = "A"
@@ -76,6 +80,7 @@ class TestUserEdit(BaseCase):
             f"First name in user's details change on 1 simbol '{new_name}'"
         )
 
+    @allure.description("Edit user email on text without @")
     def test_edit_email_on_incorrect(self):
         # EDIT
         new_email = self.email.replace("@", "")
@@ -104,6 +109,7 @@ class TestUserEdit(BaseCase):
             f"Email change on '{new_email}' without @ "
         )
 
+    @allure.description("Edit user name without authorization")
     def test_edit_without_auth(self):
         # EDIT
         new_name = "Change Name"
@@ -124,6 +130,7 @@ class TestUserEdit(BaseCase):
 
         Assertions.assert_json_value_not_name(response_get, "firstName", new_name, f"Firstname change without autorization on {new_name}")
 
+    @allure.description("Edit user with authorization another user")
     def test_edit_with_auth_another_user(self):
         # EDIT
         new_name = "Change Name"
